@@ -20,14 +20,14 @@ public class GenericDAO<T> {
     }
 
     public List<T> getItems(int offset, int count) {
-        Query query = getCurrentSession().createQuery("from" + clazz.getName(), clazz);
+        Query query = getCurrentSession().createQuery("from " + clazz.getName(), clazz);
         query.setFirstResult(offset);
         query.setMaxResults(count);
         return query.getResultList();
     }
 
     public List<T> findAll() {
-        return getCurrentSession().createQuery("from" + clazz.getName(), clazz).list();
+        return getCurrentSession().createQuery("from " + clazz.getName(), clazz).list();
     }
 
     public T save(final T entity) {
@@ -48,7 +48,7 @@ public class GenericDAO<T> {
         delete(entity);
     }
 
-    private Session getCurrentSession() {
+    protected Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }
 }

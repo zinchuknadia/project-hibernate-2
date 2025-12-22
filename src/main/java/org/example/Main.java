@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.dao.*;
 import org.example.domain.*;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
@@ -69,8 +70,37 @@ public class Main {
         staffDAO = new StaffDAO(sessionFactory);
         storeDAO = new StoreDAO(sessionFactory);
     }
-    public static void main( String[] args )
-    {
+
+    public static void main(String[] args) {
         Main main = new Main();
+        Customer customer = main.createCustomer();
+    }
+
+    private Customer createCustomer() {
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+
+            Store store = storeDAO.getItems(0, 1).get(0);
+            City city = cityDAO.getByName("Kragujevac");
+
+            Address address = new Address();
+            address.setAddress("Index str, 24");
+            address.setPhone("134-534-3536");
+            address.setCity(city);
+            address.setDistrict("Main");
+            addressDAO.save(address);
+
+            Customer customer = new Customer();
+            customer.setActive(true);
+            customer.setEmail("test@test.com");
+            customer.setAddress(address);
+            customer.setStore(store);
+            customer.setFirstName("John");
+            customer.setLastName("Martin");
+            customerDAO.save(customer);
+
+            session.getTransaction().commit();
+            return customer;
+        }
     }
 }
