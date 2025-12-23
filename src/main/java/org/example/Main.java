@@ -7,7 +7,13 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 public class Main {
     private final SessionFactory sessionFactory;
@@ -74,6 +80,94 @@ public class Main {
     public static void main(String[] args) {
         Main main = new Main();
         Customer customer = main.createCustomer();
+        main.customerReturnInventoryToStore();
+        main.customerRentInventory(customer);
+        main.addNewFilmForRent();
+    }
+
+    private void addNewFilmForRent() {
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+
+            Language language = languageDAO.getItems(0, 21).stream().unordered().findAny().get();
+            List<Category> categories = categoryDAO.getItems(0, 5);
+            List<Actor> actors = actorDAO.getItems(0, 20);
+
+            Set<Feature> features = new HashSet<>();
+            features.add(Feature.TRAILERS);
+            features.add(Feature.BEHIND_THE_SCENES);
+
+            Film film = new Film();
+            film.setActors(new HashSet<>(actors));
+            film.setRating(Rating.NC17);
+            film.setSpecialFeatures(features);
+            film.setLength((short) 251);
+            film.setReplacementCost(BigDecimal.TEN);
+            film.setRentalRate(BigDecimal.TEN);
+            film.setLanguage(language);
+            film.setDescription("This is a film");
+            film.setTitle("Terminator");
+            film.setRentalDuration((byte) 35);
+            film.setOriginalLanguage(language);
+            film.setCategories(new HashSet<>(categories));
+            film.setYear(Year.now());
+            filmDAO.save(film);
+
+            FilmText filmText = new FilmText();
+            filmText.setFilm(film);
+            filmText.setId(film.getId());
+            filmText.setDescription("This is a film text");
+            filmText.setTitle("Terminator");
+            filmTextDAO.save(filmText);
+
+            session.getTransaction().commit();
+        }
+    }
+
+    private void customerRentInventory(Customer customer) {
+        try(Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+
+            Film film = filmDAO.getFirstAvailableFilmForRent();
+            Store store = storeDAO.getItems(0, 1).get(0);
+
+            Inventory inventory = new Inventory();
+            inventory.setFilm(film);
+            inventory.setStore(store);
+            inventoryDAO.save(inventory);
+
+            Staff staff = store.getManagerStaff();
+
+            Rental rental = new Rental();
+            rental.setRentalDate(LocalDateTime.now());
+            rental.setCustomer(customer);
+            rental.setInventory(inventory);
+            rental.setStaff(staff);
+            rentalDAO.save(rental);
+
+            Payment payment = new Payment();
+            payment.setRental(rental);
+            payment.setPaymentDate(LocalDateTime.now());
+            payment.setCustomer(customer);
+            payment.setAmount(BigDecimal.valueOf(74.34));
+            payment.setStaff(staff);
+            paymentDAO.save(payment);
+
+            session.getTransaction().commit();
+        }
+    }
+
+    private void customerReturnInventoryToStore() {
+        try(Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+
+            Rental rental = rentalDAO.getAnyUnreturnedItem();
+            rental.setReturnDate(LocalDateTime.now());
+
+            rentalDAO.update(rental);
+
+            session.getTransaction().commit();
+        }
     }
 
     private Customer createCustomer() {
