@@ -4,19 +4,15 @@ import org.example.dao.*;
 import org.example.domain.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
 public class Main {
-    private final SessionFactory sessionFactory;
 
     private final ActorDAO actorDAO;
     private final AddressDAO addressDAO;
@@ -34,32 +30,7 @@ public class Main {
     private final StoreDAO storeDAO;
 
     public Main() {
-        Properties properties = new Properties();
-        properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
-        properties.put(Environment.DRIVER, "com.p6spy.engine.spy.P6SpyDriver");
-        properties.put(Environment.URL, "jdbc:p6spy:mysql://localhost:3306/test_schema");
-        properties.put(Environment.USER, "root");
-        properties.put(Environment.PASS, "12345678");
-        properties.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
-        properties.put(Environment.HBM2DDL_AUTO, "validate");
-
-        sessionFactory = new Configuration()
-                .addAnnotatedClass(Actor.class)
-                .addAnnotatedClass(Address.class)
-                .addAnnotatedClass(Category.class)
-                .addAnnotatedClass(City.class)
-                .addAnnotatedClass(Country.class)
-                .addAnnotatedClass(Customer.class)
-                .addAnnotatedClass(Film.class)
-                .addAnnotatedClass(FilmText.class)
-                .addAnnotatedClass(Inventory.class)
-                .addAnnotatedClass(Language.class)
-                .addAnnotatedClass(Payment.class)
-                .addAnnotatedClass(Rental.class)
-                .addAnnotatedClass(Staff.class)
-                .addAnnotatedClass(Store.class)
-                .addProperties(properties)
-                .buildSessionFactory();
+        SessionFactory sessionFactory = MySessionFactory.getSessionFactory();
 
         actorDAO = new ActorDAO(sessionFactory);
         addressDAO = new AddressDAO(sessionFactory);
@@ -86,7 +57,7 @@ public class Main {
     }
 
     private void addNewFilmForRent() {
-        try (Session session = sessionFactory.getCurrentSession()) {
+        try (Session session = MySessionFactory.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
             Language language = languageDAO.getItems(0, 21).stream().unordered().findAny().get();
@@ -125,7 +96,7 @@ public class Main {
     }
 
     private void customerRentInventory(Customer customer) {
-        try(Session session = sessionFactory.getCurrentSession()) {
+        try (Session session = MySessionFactory.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
             Film film = filmDAO.getFirstAvailableFilmForRent();
@@ -158,7 +129,7 @@ public class Main {
     }
 
     private void customerReturnInventoryToStore() {
-        try(Session session = sessionFactory.getCurrentSession()) {
+        try (Session session = MySessionFactory.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
             Rental rental = rentalDAO.getAnyUnreturnedItem();
@@ -171,7 +142,7 @@ public class Main {
     }
 
     private Customer createCustomer() {
-        try (Session session = sessionFactory.getCurrentSession()) {
+        try (Session session = MySessionFactory.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
             Store store = storeDAO.getItems(0, 1).get(0);
