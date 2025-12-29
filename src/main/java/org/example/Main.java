@@ -1,7 +1,35 @@
 package org.example;
 
-import org.example.dao.*;
-import org.example.domain.*;
+import org.example.dao.ActorDAO;
+import org.example.dao.AddressDAO;
+import org.example.dao.CategoryDAO;
+import org.example.dao.CityDAO;
+import org.example.dao.CountryDAO;
+import org.example.dao.CustomerDAO;
+import org.example.dao.FilmDAO;
+import org.example.dao.FilmTextDAO;
+import org.example.dao.InventoryDAO;
+import org.example.dao.LanguageDAO;
+import org.example.dao.PaymentDAO;
+import org.example.dao.RentalDAO;
+import org.example.dao.StaffDAO;
+import org.example.dao.StoreDAO;
+
+import org.example.domain.Actor;
+import org.example.domain.Category;
+import org.example.domain.Customer;
+import org.example.domain.Language;
+import org.example.domain.Feature;
+import org.example.domain.Film;
+import org.example.domain.Rating;
+import org.example.domain.FilmText;
+import org.example.domain.Store;
+import org.example.domain.Inventory;
+import org.example.domain.Staff;
+import org.example.domain.Rental;
+import org.example.domain.Payment;
+import org.example.domain.City;
+import org.example.domain.Address;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 

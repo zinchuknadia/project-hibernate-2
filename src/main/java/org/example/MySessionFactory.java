@@ -1,6 +1,20 @@
 package org.example;
 
-import org.example.domain.*;
+import org.example.domain.Actor;
+import org.example.domain.Category;
+import org.example.domain.Customer;
+import org.example.domain.Language;
+import org.example.domain.Film;
+import org.example.domain.FilmText;
+import org.example.domain.Store;
+import org.example.domain.Inventory;
+import org.example.domain.Staff;
+import org.example.domain.Rental;
+import org.example.domain.Payment;
+import org.example.domain.City;
+import org.example.domain.Address;
+import org.example.domain.Country;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
