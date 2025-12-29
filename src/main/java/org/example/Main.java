@@ -50,12 +50,12 @@ public class Main {
     private final CustomerRepository customerRepository;
     private final FilmRepository filmRepository;
     private final FilmTextRepository filmTextRepository;
-    private final InventoryRepository inventoryDAO;
-    private final LanguageRepository languageDAO;
-    private final PaymentRepository paymentDAO;
-    private final RentalRepository rentalDAO;
-    private final StaffRepository staffDAO;
-    private final StoreRepository storeDAO;
+    private final InventoryRepository inventoryRepository;
+    private final LanguageRepository languageRepository;
+    private final PaymentRepository paymentRepository;
+    private final RentalRepository rentalRepository;
+    private final StaffRepository staffRepository;
+    private final StoreRepository storeRepository;
 
     public Main() {
         SessionFactory sessionFactory = MySessionFactory.getSessionFactory();
@@ -68,12 +68,12 @@ public class Main {
         customerRepository = new CustomerRepository(sessionFactory);
         filmRepository = new FilmRepository(sessionFactory);
         filmTextRepository = new FilmTextRepository(sessionFactory);
-        inventoryDAO = new InventoryRepository(sessionFactory);
-        languageDAO = new LanguageRepository(sessionFactory);
-        paymentDAO = new PaymentRepository(sessionFactory);
-        rentalDAO = new RentalRepository(sessionFactory);
-        staffDAO = new StaffRepository(sessionFactory);
-        storeDAO = new StoreRepository(sessionFactory);
+        inventoryRepository = new InventoryRepository(sessionFactory);
+        languageRepository = new LanguageRepository(sessionFactory);
+        paymentRepository = new PaymentRepository(sessionFactory);
+        rentalRepository = new RentalRepository(sessionFactory);
+        staffRepository = new StaffRepository(sessionFactory);
+        storeRepository = new StoreRepository(sessionFactory);
     }
 
     public static void main(String[] args) {
@@ -88,7 +88,7 @@ public class Main {
         try (Session session = MySessionFactory.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
-            Language language = languageDAO.getItems(0, 21).stream().unordered().findAny().get();
+            Language language = languageRepository.getItems(0, 21).stream().unordered().findAny().get();
             List<Category> categories = categoryRepository.getItems(0, 5);
             List<Actor> actors = actorRepository.getItems(0, 20);
 
@@ -128,12 +128,12 @@ public class Main {
             session.beginTransaction();
 
             Film film = filmRepository.getFirstAvailableFilmForRent();
-            Store store = storeDAO.getItems(0, 1).get(0);
+            Store store = storeRepository.getItems(0, 1).get(0);
 
             Inventory inventory = new Inventory();
             inventory.setFilm(film);
             inventory.setStore(store);
-            inventoryDAO.save(inventory);
+            inventoryRepository.save(inventory);
 
             Staff staff = store.getManagerStaff();
 
@@ -142,7 +142,7 @@ public class Main {
             rental.setCustomer(customer);
             rental.setInventory(inventory);
             rental.setStaff(staff);
-            rentalDAO.save(rental);
+            rentalRepository.save(rental);
 
             Payment payment = new Payment();
             payment.setRental(rental);
@@ -150,7 +150,7 @@ public class Main {
             payment.setCustomer(customer);
             payment.setAmount(BigDecimal.valueOf(74.34));
             payment.setStaff(staff);
-            paymentDAO.save(payment);
+            paymentRepository.save(payment);
 
             session.getTransaction().commit();
         }
@@ -160,10 +160,10 @@ public class Main {
         try (Session session = MySessionFactory.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
-            Rental rental = rentalDAO.getAnyUnreturnedItem();
+            Rental rental = rentalRepository.getAnyUnreturnedItem();
             rental.setReturnDate(LocalDateTime.now());
 
-            rentalDAO.update(rental);
+            rentalRepository.update(rental);
 
             session.getTransaction().commit();
         }
@@ -173,7 +173,7 @@ public class Main {
         try (Session session = MySessionFactory.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
-            Store store = storeDAO.getItems(0, 1).get(0);
+            Store store = storeRepository.getItems(0, 1).get(0);
             City city = cityRepository.getByName("Kragujevac");
 
             Address address = new Address();
