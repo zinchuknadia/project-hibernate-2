@@ -4,8 +4,8 @@ import org.example.domain.Rental;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
-public class RentalDAO extends GenericDAO<Rental> {
-    public RentalDAO(SessionFactory sessionFactory) {
+public class RentalRepository extends GenericRepository<Rental> {
+    public RentalRepository(SessionFactory sessionFactory) {
         super(Rental.class, sessionFactory);
     }
 

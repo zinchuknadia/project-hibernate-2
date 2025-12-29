@@ -4,8 +4,8 @@ import org.example.domain.City;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
-public class CityDAO extends GenericDAO<City> {
-    public CityDAO(SessionFactory sessionFactory) {
+public class CityRepository extends GenericRepository<City> {
+    public CityRepository(SessionFactory sessionFactory) {
         super(City.class, sessionFactory);
     }
 

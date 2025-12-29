@@ -1,19 +1,19 @@
 package org.example;
 
-import org.example.dao.ActorDAO;
-import org.example.dao.AddressDAO;
-import org.example.dao.CategoryDAO;
-import org.example.dao.CityDAO;
-import org.example.dao.CountryDAO;
-import org.example.dao.CustomerDAO;
-import org.example.dao.FilmDAO;
-import org.example.dao.FilmTextDAO;
-import org.example.dao.InventoryDAO;
-import org.example.dao.LanguageDAO;
-import org.example.dao.PaymentDAO;
-import org.example.dao.RentalDAO;
-import org.example.dao.StaffDAO;
-import org.example.dao.StoreDAO;
+import org.example.dao.ActorRepository;
+import org.example.dao.AddressRepository;
+import org.example.dao.CategoryRepository;
+import org.example.dao.CityRepository;
+import org.example.dao.CountryRepository;
+import org.example.dao.CustomerRepository;
+import org.example.dao.FilmRepository;
+import org.example.dao.FilmTextRepository;
+import org.example.dao.InventoryRepository;
+import org.example.dao.LanguageRepository;
+import org.example.dao.PaymentRepository;
+import org.example.dao.RentalRepository;
+import org.example.dao.StaffRepository;
+import org.example.dao.StoreRepository;
 
 import org.example.domain.Actor;
 import org.example.domain.Category;
@@ -42,38 +42,38 @@ import java.util.Set;
 
 public class Main {
 
-    private final ActorDAO actorDAO;
-    private final AddressDAO addressDAO;
-    private final CategoryDAO categoryDAO;
-    private final CityDAO cityDAO;
-    private final CountryDAO countryDAO;
-    private final CustomerDAO customerDAO;
-    private final FilmDAO filmDAO;
-    private final FilmTextDAO filmTextDAO;
-    private final InventoryDAO inventoryDAO;
-    private final LanguageDAO languageDAO;
-    private final PaymentDAO paymentDAO;
-    private final RentalDAO rentalDAO;
-    private final StaffDAO staffDAO;
-    private final StoreDAO storeDAO;
+    private final ActorRepository actorRepository;
+    private final AddressRepository addressRepository;
+    private final CategoryRepository categoryRepository;
+    private final CityRepository cityRepository;
+    private final CountryRepository countryRepository;
+    private final CustomerRepository customerRepository;
+    private final FilmRepository filmRepository;
+    private final FilmTextRepository filmTextRepository;
+    private final InventoryRepository inventoryDAO;
+    private final LanguageRepository languageDAO;
+    private final PaymentRepository paymentDAO;
+    private final RentalRepository rentalDAO;
+    private final StaffRepository staffDAO;
+    private final StoreRepository storeDAO;
 
     public Main() {
         SessionFactory sessionFactory = MySessionFactory.getSessionFactory();
 
-        actorDAO = new ActorDAO(sessionFactory);
-        addressDAO = new AddressDAO(sessionFactory);
-        categoryDAO = new CategoryDAO(sessionFactory);
-        cityDAO = new CityDAO(sessionFactory);
-        countryDAO = new CountryDAO(sessionFactory);
-        customerDAO = new CustomerDAO(sessionFactory);
-        filmDAO = new FilmDAO(sessionFactory);
-        filmTextDAO = new FilmTextDAO(sessionFactory);
-        inventoryDAO = new InventoryDAO(sessionFactory);
-        languageDAO = new LanguageDAO(sessionFactory);
-        paymentDAO = new PaymentDAO(sessionFactory);
-        rentalDAO = new RentalDAO(sessionFactory);
-        staffDAO = new StaffDAO(sessionFactory);
-        storeDAO = new StoreDAO(sessionFactory);
+        actorRepository = new ActorRepository(sessionFactory);
+        addressRepository = new AddressRepository(sessionFactory);
+        categoryRepository = new CategoryRepository(sessionFactory);
+        cityRepository = new CityRepository(sessionFactory);
+        countryRepository = new CountryRepository(sessionFactory);
+        customerRepository = new CustomerRepository(sessionFactory);
+        filmRepository = new FilmRepository(sessionFactory);
+        filmTextRepository = new FilmTextRepository(sessionFactory);
+        inventoryDAO = new InventoryRepository(sessionFactory);
+        languageDAO = new LanguageRepository(sessionFactory);
+        paymentDAO = new PaymentRepository(sessionFactory);
+        rentalDAO = new RentalRepository(sessionFactory);
+        staffDAO = new StaffRepository(sessionFactory);
+        storeDAO = new StoreRepository(sessionFactory);
     }
 
     public static void main(String[] args) {
@@ -89,8 +89,8 @@ public class Main {
             session.beginTransaction();
 
             Language language = languageDAO.getItems(0, 21).stream().unordered().findAny().get();
-            List<Category> categories = categoryDAO.getItems(0, 5);
-            List<Actor> actors = actorDAO.getItems(0, 20);
+            List<Category> categories = categoryRepository.getItems(0, 5);
+            List<Actor> actors = actorRepository.getItems(0, 20);
 
             Set<Feature> features = new HashSet<>();
             features.add(Feature.TRAILERS);
@@ -110,14 +110,14 @@ public class Main {
             film.setOriginalLanguage(language);
             film.setCategories(new HashSet<>(categories));
             film.setYear(Year.now());
-            filmDAO.save(film);
+            filmRepository.save(film);
 
             FilmText filmText = new FilmText();
             filmText.setFilm(film);
             filmText.setId(film.getId());
             filmText.setDescription("This is a film text");
             filmText.setTitle("Terminator");
-            filmTextDAO.save(filmText);
+            filmTextRepository.save(filmText);
 
             session.getTransaction().commit();
         }
@@ -127,7 +127,7 @@ public class Main {
         try (Session session = MySessionFactory.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
-            Film film = filmDAO.getFirstAvailableFilmForRent();
+            Film film = filmRepository.getFirstAvailableFilmForRent();
             Store store = storeDAO.getItems(0, 1).get(0);
 
             Inventory inventory = new Inventory();
@@ -174,14 +174,14 @@ public class Main {
             session.beginTransaction();
 
             Store store = storeDAO.getItems(0, 1).get(0);
-            City city = cityDAO.getByName("Kragujevac");
+            City city = cityRepository.getByName("Kragujevac");
 
             Address address = new Address();
             address.setAddress("Index str, 24");
             address.setPhone("134-534-3536");
             address.setCity(city);
             address.setDistrict("Main");
-            addressDAO.save(address);
+            addressRepository.save(address);
 
             Customer customer = new Customer();
             customer.setActive(true);
@@ -190,7 +190,7 @@ public class Main {
             customer.setStore(store);
             customer.setFirstName("John");
             customer.setLastName("Martin");
-            customerDAO.save(customer);
+            customerRepository.save(customer);
 
             session.getTransaction().commit();
             return customer;
